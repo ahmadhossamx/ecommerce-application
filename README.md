@@ -91,7 +91,25 @@ Base: `/api`
 | GET | `/orders/mine` | User | Your orders |
 | GET | `/orders` | Admin | All orders |
 
-## Tests
+## GitHub Pages (frontend only, `*.github.io`)
+
+GitHub Pages can host the React frontend for free at
+`https://ahmadhossamx.github.io/ecommerce-application/` — but **only static files**.
+It cannot run the Express server or MongoDB, so without a hosted backend the
+Pages site runs in demo mode: it shows the 12 sample products, and cart works
+in localStorage, but login / orders need the real API.
+
+Setup, once the code is pushed to GitHub:
+1. Repo → Settings → Pages → Build and deployment → Source: **GitHub Actions**.
+2. Push to `main` — the `.github/workflows/pages.yml` workflow builds the client
+   and deploys it to Pages.
+3. To connect the real backend, set a repo variable `VITE_API_URL` to your
+   hosted API URL (e.g. `https://your-api.onrender.com/api`), then re-run the
+   Pages workflow. Without that variable, the site stays in demo mode.
+
+For the full app (login, orders, shared data), host the backend separately —
+e.g. Render free tier + MongoDB Atlas free — and point `VITE_API_URL` at it.
+
 ```bash
 cd server && npm test   # node:test, health endpoint (no Mongo needed)
 ```

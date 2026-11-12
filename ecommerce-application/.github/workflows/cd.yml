@@ -1,0 +1,44 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push server image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./server
+          push: true
+          tags: ghcr.io/${{ github.repository }}-server:latest
+
+      - name: Build and push client image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./client
+          push: true
+          tags: ghcr.io/${{ github.repository }}-client:latest
+
+      # Deploy step — intentionally commented out. Nothing is deployed by this workflow.
+      # Add your own deploy target here, for example:
+      #   - Render: trigger a Render deploy hook (DEPLOY_HOOK_URL secret)
+      #   - Fly.io: flyctl deploy with a FLY_API_TOKEN secret
+      #   - VPS: ssh + `docker compose -f docker-compose.prod.yml pull && up -d`
+      # - name: Deploy
+      #   run: echo "Add your deploy target here"
